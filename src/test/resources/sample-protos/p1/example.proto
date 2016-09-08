@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package test.package;
+
+message SearchRequest {
+  string query = 1;
+  int32 page_number = 2;
+
+  map<int32, string> projects_inverse = 3;
+  
+  int32 result_per_page = 5;
+
+  map<string, int32> projects = 8;
+}
+
+enum Corpus {
+  UNIVERSAL = 0;
+  WEB = 1;
+  IMAGES = 2;
+  LOCAL = 3;
+  NEWS = 4;
+  PRODUCTS = 5;
+  VIDEO = 6;
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+import "music.proto";
+
+package io.coding.me.schema.database;
+
+message Database {
+
+  repeated music.Album albums = 1;
+}
+
+message Index {
+
+  map<int32, Database> albums_by_year = 1;
+}
+
+

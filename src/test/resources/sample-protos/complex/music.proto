@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+import "util.proto";
+
+package io.coding.me.schema.music;
+
+message Album {
+
+  enum Genre {
+
+    ALTERNATIVE_ROCK = 0;
+    BLUES = 1;
+    METAL = 2;
+    INDIE_ROCK = 3;
+  }
+
+  string name = 1;
+  Genre genre = 2;
+  util.Date release_date = 3;
+
+  oneof interpret {
+
+    Band band = 5;
+    Musician musician = 6;
+  }
+}
+
+message Musician {
+
+  string name = 1;
+}
+
+message Band {
+
+  string name = 1;
+
+  repeated Musician members = 2;
+
+}
