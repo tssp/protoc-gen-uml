@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package test.package;
+
+message SampleMessage {
+  oneof test_oneof {
+    string name = 4;
+    int32 id = 9;
+  }
+
+  string other = 10;
+
+  oneof test_oneof2 {
+    string name2 = 14;
+    int32 id2 = 18;
+  }
+}

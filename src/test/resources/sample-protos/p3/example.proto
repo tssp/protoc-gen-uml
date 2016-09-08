@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package test.package;
+
+
+message Container {
+
+}
+
+message SampleMessage {
+
+  message SubMessage {
+
+    message SubSubMessage {
+
+    }
+    string s = 1;
+  }
+
+  SubMessage sub_message = 10;
+
+  SubMessage.SubSubMessage sub_sub_message = 11;
+
+  Container container = 12;
+}
