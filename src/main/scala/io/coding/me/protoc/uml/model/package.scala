@@ -89,17 +89,36 @@ package object model {
       def elements: Seq[ElementType]
 
       def origin: Origin
+
+      def referencedTypeIdentifiers: Set[TypeIdentifier]
     }
 
+    private def findReferencesInFieldType(fieldType: FieldTypes.FieldType): Seq[TypeIdentifier] = fieldType match {
+
+      case FieldTypes.CompoundType(typeIdentifier)          => Seq(typeIdentifier)
+      case FieldTypes.MapType(keyFieldType, valueFieldType) => findReferencesInFieldType(keyFieldType) ++ findReferencesInFieldType(valueFieldType)
+      case _                                                => Nil
+    }
+    private def findReferencesInMessageField(messageField: MessageFields.MessageField) = messageField match {
+
+      case MessageFields.TypedField(_, fieldType, _)   => findReferencesInFieldType(fieldType)
+      case MessageFields.OneOfField(_, typeIdentifier) => Seq(typeIdentifier)
+      case _                                           => Nil
+
+    }
     case class MessageType(identifier: TypeIdentifier, enclosingType: Option[TypeIdentifier], elements: Seq[MessageFields.MessageField], origin: Origin)
         extends Type {
 
       type ElementType = MessageFields.MessageField
+
+      override lazy val referencedTypeIdentifiers = elements.flatMap(findReferencesInMessageField).toSet
     }
 
     case class EnumType(identifier: TypeIdentifier, enclosingType: Option[TypeIdentifier], elements: Seq[EnumFields.EnumField], origin: Origin) extends Type {
 
       type ElementType = EnumFields.EnumField
+
+      override val referencedTypeIdentifiers = Set.empty[TypeIdentifier]
     }
 
     case class OneOfType(identifier: TypeIdentifier,
@@ -111,6 +130,8 @@ package object model {
       require(enclosingType.isDefined)
 
       type ElementType = MessageFields.MessageField
+
+      override lazy val referencedTypeIdentifiers = elements.flatMap(findReferencesInMessageField).toSet
     }
   }
 

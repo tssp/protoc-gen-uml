@@ -26,8 +26,9 @@ abstract class ProtocGenUMLSpec(name: String, folder: String) extends FlatSpec w
   private var testFiles: Array[String] = Array()
 
   protected def config: Config = Configuration()
-
   protected lazy val protocUMLGenerator = ProtocUMLGenerator()
+  protected lazy val typeRepository = protocUMLGenerator.typeRepository
+  protected lazy val fileContent = protocUMLGenerator.fileContent
 
   tmpFile.deleteOnExit
 
@@ -66,7 +67,6 @@ abstract class ProtocGenUMLSpec(name: String, folder: String) extends FlatSpec w
 class SimpleProtocGenUMLSpec extends ProtocGenUMLSpec("simple", "p1") {
 
   lazy val pakkage        = Package("test.package")
-  lazy val typeRepository = protocUMLGenerator.typeRepository
 
   it should "have a simple message type" in {
 
@@ -108,7 +108,6 @@ class SimpleProtocGenUMLSpec extends ProtocGenUMLSpec("simple", "p1") {
 class OneOfProtocGenUMLSpec extends ProtocGenUMLSpec("oneOf", "p2") {
 
   lazy val pakkage        = Package("test.package")
-  lazy val typeRepository = protocUMLGenerator.typeRepository
 
   it should "have a simple message type with oneOf field" in {
 
@@ -134,7 +133,6 @@ class OneOfProtocGenUMLSpec extends ProtocGenUMLSpec("oneOf", "p2") {
 class NestedProtocGenUMLSpec extends ProtocGenUMLSpec("nested", "p3") {
 
   lazy val pakkage        = Package("test.package")
-  lazy val typeRepository = protocUMLGenerator.typeRepository
 
   val identifier             = TypeIdentifier(pakkage, Name("SampleMessage"))
   val nestedIdentifier       = TypeIdentifier(pakkage, Name(s"SampleMessage${TYPE_NAME_SEPARATOR}SubMessage"))
@@ -162,7 +160,6 @@ class NestedProtocGenUMLSpec extends ProtocGenUMLSpec("nested", "p3") {
 
 class ComplexProtocGenUMLSpec extends ProtocGenUMLSpec("complex", "complex") {
 
-  lazy val typeRepository = protocUMLGenerator.typeRepository
   it should "have all expected types" in {
 
     val musicPackage    = Package("io.coding.me.schema.music")

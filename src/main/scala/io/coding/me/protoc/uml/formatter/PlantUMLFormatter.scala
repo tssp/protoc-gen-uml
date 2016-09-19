@@ -38,13 +38,13 @@ object PlantUMLFormatter extends UMLFormatter {
     def formatMultiplicity(m: Option[Multiplicity]) = m match {
 
       case Some(Many) => "[*]"
-      case _ => ""
+      case _          => ""
     }
     def formatField(field: MessageField, pakkage: Package, enclosingType: TypeIdentifier) = field match {
 
-      case OneOfField(name, typeIdentifier)         => s"$name: ${formatFullTypeName(typeIdentifier, pakkage, enclosingType)}"
+      case OneOfField(name, typeIdentifier)          => s"$name: ${formatFullTypeName(typeIdentifier, pakkage, enclosingType)}"
       case TypedField(name, fieldType, multiplicity) => s"$name: ${formatFieldType(fieldType, pakkage, enclosingType)} ${formatMultiplicity(multiplicity)}"
-      case _                                        => ???
+      case _                                         => ???
     }
 
     def formatType(typ: Types.Type, pakkage: Package) =
@@ -66,39 +66,22 @@ object PlantUMLFormatter extends UMLFormatter {
           }
 
         }
-        .withCondition(config.view.relations) { f =>
-          val elements = typ match {
-
-            case o: Types.OneOfType   => o.elements
-            case m: Types.MessageType => m.elements
-            case _                    => Nil
-          }
-
-          def findReferencesInFieldType(fieldType: FieldTypes.FieldType): Seq[TypeIdentifier] = fieldType match {
-
-            case CompoundType(typeIdentifier)          => Seq(typeIdentifier)
-            case MapType(keyFieldType, valueFieldType) => findReferencesInFieldType(keyFieldType) ++ findReferencesInFieldType(valueFieldType)
-            case _                                     => Nil
-          }
-          def findReferencesInMessageField(messageField: MessageFields.MessageField): Seq[TypeIdentifier] = messageField match {
-
-            case TypedField(_, fieldType, _)   => findReferencesInFieldType(fieldType)
-            case OneOfField(_, typeIdentifier) => Seq(typeIdentifier)
-            case _                             => Nil
-
-          }
-          val referenceElements = elements.flatMap(findReferencesInMessageField)
-          val fromName = formatFullTypeNameWithPackage(typ.identifier, pakkage)
-          val relations = referenceElements.map(e => formatFullTypeName(e, pakkage, typ.identifier)).distinct.map(toName => s"$fromName -- $toName")
-
-          formatIterable(f, relations)
-
-        }
         .newline
 
     StructuredStringFormatter
       .add("@startuml")
       .add(config.formatter.plantUML.fileHeader)
+      .withCondition(config.view.relations) {
+        _.add {
+
+          types.map { typ =>
+            val fromName  = typ.identifier.toString
+            val relations = typ.referencedTypeIdentifiers.map(_.toString).map(toName => s"$fromName -- $toName")
+
+            formatIterable(StructuredStringFormatter.newline, relations)
+          }
+        }
+      }
       .withIfElse(config.view.pakkage)(ifFormatter = {
 
         _.add(types.groupBy(_.identifier.pakkage).map {

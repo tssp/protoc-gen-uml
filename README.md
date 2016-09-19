@@ -6,7 +6,7 @@
 
 When dealing with protocol buffers in your project, it is often quite difficult to get a proper overview - or better the essence of the data model, especially when you have many types.
 I am not an UML evangelist, but at least for data models it seems to be a very valuable tool (though there may be other valuable areas).
-Loosely based on "a picture is worth than a thousand words" I strongly believe a generated class diagram for your proto messages and enums (services are not yet supported) allows you
+Loosely based on "a picture is worth more than a thousand words" I strongly believe a generated class diagram for your proto messages and enums (services are not yet supported) allows you
 and your clients a faster understanding of your model.
 
 The basic idea of protoc-gen-uml is to plugin into `protoc` and generate a new representation that can be understood by different UML tools, such as PlantUML.  
@@ -46,7 +46,7 @@ plantuml /tmp/complete_model.puml
 
 ## Versions
 
-The plugin is developed and tested with PB version 3 and requires Scala 2.11 and Java 8. Currently it is not in a state which is releasable.
+The plugin is developed and tested with PB version 3 and requires Scala 2.11 and Java 8. Currently it is not in a state which is releasable - exhaustive tests of more protos are required.
 
 ## Type Transformation
 
