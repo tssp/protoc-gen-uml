@@ -1,9 +1,9 @@
 package io.coding.me.protoc.uml
 
-import net.ceedubs.ficus.Ficus._
-import net.ceedubs.ficus.readers.EnumerationReader._
-import net.ceedubs.ficus.readers.ArbitraryTypeReader._
-import net.ceedubs.ficus.readers.ValueReader
+import pureconfig._
+import pureconfig.syntax._
+import pureconfig.ConfigConvert.fromString
+
 import com.typesafe.config.ConfigFactory
 
 package object config {
@@ -55,8 +55,13 @@ package object config {
   case class Output(format: OutputFormat.Value, organization: OutputFileOrganization.Value, grouping: OutputGrouping.Value, file: String, filter: OutputFilter)
   case class Config(output: Output, uml: UML)
 
+  implicit val converterOutputFileOrganization = fromString[OutputFileOrganization.Value](OutputFileOrganization.withName(_))
+  implicit val converterOutputGrouping         = fromString[OutputGrouping.Value](OutputGrouping.withName(_))
+  implicit val converterOutputFormat           = fromString[OutputFormat.Value] { OutputFormat.withName(_) }
+  implicit val converterOneOfRepresentation    = fromString[OneOfRepresentation.Value](OneOfRepresentation.withName(_))
+
   object Configuration {
 
-    def apply(): Config = ConfigFactory.load.as[Config]("protoc-gen-uml")
+    def apply(): Config = ConfigFactory.load().getConfig("protoc-gen-uml").to[Config].get
   }
 }
