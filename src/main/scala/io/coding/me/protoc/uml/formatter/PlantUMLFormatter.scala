@@ -10,7 +10,7 @@ import io.coding.me.protoc.uml.{config => c}
 /** Generates a textual description of the Protos in PlantUML format. */
 object PlantUMLFormatter extends UMLFormatter {
 
-  override def apply(types: Iterable[Types.Type], typeRepository: TypeRepository, config: c.UML) = {
+  override def apply(types: Iterable[Types.Type], typeRepository: TypeRepository, config: c.Config) = {
 
     def formatIterable[T <: String](initial: StructuredStringFormatter, iterable: Iterable[T]) =
       iterable.foldLeft(initial)((formatter, element) => formatter.add(element))
@@ -55,7 +55,7 @@ object PlantUMLFormatter extends UMLFormatter {
           case o: Types.OneOfType   => s"class ${o.identifier.name} << oneOf >>"
           case m: Types.MessageType => s"class ${m.identifier.name}"
         }
-      }.withCondition(config.view.fields) {
+      }.withCondition(config.uml.view.fields) {
           _.withCurlyBrackets { f =>
             typ match {
 
@@ -68,10 +68,27 @@ object PlantUMLFormatter extends UMLFormatter {
         }
         .newline
 
+    def formatTypes(types: Iterable[Types.Type]) = StructuredStringFormatter.add {
+
+      config.output.grouping match {
+
+        case c.OutputGrouping.BY_FILE =>
+          types.groupBy(_.origin.file).map {
+            case (_, typesPerFile) =>
+              StructuredStringFormatter
+                .add("together")
+                .withCurlyBrackets(_.add(typesPerFile.toSeq.sortBy(_.identifier.name.n).map(t => formatType(t, t.identifier.pakkage))))
+          }
+
+        case _ => types.toSeq.sortBy(_.identifier.name.n).map(t => formatType(t, t.identifier.pakkage))
+
+      }
+    }
+
     StructuredStringFormatter
       .add("@startuml")
-      .add(config.formatter.plantUML.fileHeader)
-      .withCondition(config.view.relations) {
+      .add(config.uml.formatter.plantUML.fileHeader)
+      .withCondition(config.uml.view.relations) {
         _.add {
 
           types.map { typ =>
@@ -82,14 +99,14 @@ object PlantUMLFormatter extends UMLFormatter {
           }
         }
       }
-      .withIfElse(config.view.pakkage)(ifFormatter = {
+      .withIfElse(config.uml.view.pakkage)(ifFormatter = {
 
         _.add(types.groupBy(_.identifier.pakkage).map {
           case (pakkage, typesPerPackage) =>
-            StructuredStringFormatter.add(s"package $pakkage").withCurlyBrackets(_.add(typesPerPackage.map(t => formatType(t, t.identifier.pakkage))))
+            StructuredStringFormatter.add(s"package $pakkage").withCurlyBrackets(_.add(formatTypes(typesPerPackage)))
         })
 
-      }, elseFormatter = _.add(types.map(t => formatType(t, t.identifier.pakkage))))
+      }, elseFormatter = _.add(formatTypes(types)))
       .add("@enduml")
       .toString
 

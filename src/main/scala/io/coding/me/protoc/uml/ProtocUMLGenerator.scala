@@ -32,15 +32,15 @@ class ProtocUMLGenerator(config: Config) extends ProtocCodeGenerator {
 
     fileContent = config.output.organization match {
 
-      case OutputFileOrganization.SINGLE_FILE => Map(createFileName(config.output.file) -> umlFormatter(typeRepository.values, typeRepository, config.uml))
+      case OutputFileOrganization.SINGLE_FILE => Map(createFileName(config.output.file) -> umlFormatter(typeRepository.values, typeRepository, config))
       case OutputFileOrganization.DIRECT_MAPPING =>
-        typeRepository.values.groupBy(_.origin.file).map { case (file, types) => file -> umlFormatter(types, typeRepository, config.uml) }.map {
+        typeRepository.values.groupBy(_.origin.file).map { case (file, types) => file -> umlFormatter(types, typeRepository, config) }.map {
           case (file, content) =>
             createFileName(file) -> content
         }
 
       case OutputFileOrganization.FILE_PER_PACKAGE =>
-        typeRepository.values.groupBy(_.identifier.pakkage).map { case (pakkage, types) => pakkage                                 -> umlFormatter(types, typeRepository, config.uml) }.map {
+        typeRepository.values.groupBy(_.identifier.pakkage).map { case (pakkage, types) => pakkage                                 -> umlFormatter(types, typeRepository, config) }.map {
           case (pakkage, content)                                                       => createFileName(s"${pakkage.p}.package") -> content
         }
     }

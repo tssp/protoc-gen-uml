@@ -24,6 +24,14 @@ package object config {
     val PLANT_UML = Value("PlantUML")
   }
 
+  /** Additional grouing inside output file */
+  object OutputGrouping extends Enumeration {
+
+    val DEFAULT = Value("Default")
+    val BY_FILE = Value("ByFile")
+  }
+
+  /** Configures which types shall not be part of the output. */
   case class OutputFilter(packages: Set[String])
 
   /** Configures the organization of the output files */
@@ -44,7 +52,7 @@ package object config {
   case class Formatter(plantUML: PlantUMLConfig)
   case class UML(formatter: Formatter, view: View)
 
-  case class Output(format: OutputFormat.Value, organization: OutputFileOrganization.Value, file: String, filter: OutputFilter)
+  case class Output(format: OutputFormat.Value, organization: OutputFileOrganization.Value, grouping: OutputGrouping.Value, file: String, filter: OutputFilter)
   case class Config(output: Output, uml: UML)
 
   object Configuration {

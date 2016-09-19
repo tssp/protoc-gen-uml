@@ -5,7 +5,7 @@ import io.coding.me.protoc.uml.{config => c}
 
 package object formatter {
 
-  type UMLFormatter = (Iterable[Types.Type], TypeRepository, c.UML) => String
+  type UMLFormatter = (Iterable[Types.Type], TypeRepository, c.Config) => String
 
   case class StructuredStringFormatter(lines: Seq[String], level: Int) {
 
