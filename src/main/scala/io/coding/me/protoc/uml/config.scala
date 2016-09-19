@@ -3,6 +3,7 @@ package io.coding.me.protoc.uml
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.EnumerationReader._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
+import net.ceedubs.ficus.readers.ValueReader
 import com.typesafe.config.ConfigFactory
 
 package object config {
@@ -23,6 +24,8 @@ package object config {
     val PLANT_UML = Value("PlantUML")
   }
 
+  case class OutputFilter(packages: Set[String])
+
   /** Configures the organization of the output files */
   object OutputFileOrganization extends Enumeration {
 
@@ -41,7 +44,7 @@ package object config {
   case class Formatter(plantUML: PlantUMLConfig)
   case class UML(formatter: Formatter, view: View)
 
-  case class Output(format: OutputFormat.Value, organization: OutputFileOrganization.Value, file: String)
+  case class Output(format: OutputFormat.Value, organization: OutputFileOrganization.Value, file: String, filter: OutputFilter)
   case class Config(output: Output, uml: UML)
 
   object Configuration {

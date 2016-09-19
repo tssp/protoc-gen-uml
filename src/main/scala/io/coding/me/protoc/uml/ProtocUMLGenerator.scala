@@ -17,7 +17,7 @@ class ProtocUMLGenerator(config: Config) extends ProtocCodeGenerator {
 
   override def run(req: CodeGeneratorRequest): CodeGeneratorResponse = {
 
-    typeRepository = Transformer(req)
+    typeRepository = Transformer(req).filterNot{ case(typeIdentifier, _) => config.output.filter.packages(typeIdentifier.pakkage.p)}
 
     val (umlFormatter, fileExtension) = config.output.format match {
 
