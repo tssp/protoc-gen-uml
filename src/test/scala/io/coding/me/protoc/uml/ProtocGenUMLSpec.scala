@@ -21,14 +21,14 @@ import scala.collection.JavaConversions._
 
 abstract class ProtocGenUMLSpec(name: String, folder: String) extends FlatSpec with Matchers with Inside {
 
-  private val tmpFile = Files.createTempDirectory("compiled-protos-").toFile
+  private val tmpFile                  = Files.createTempDirectory("compiled-protos-").toFile
   private var testDir: String          = null
   private var testFiles: Array[String] = Array()
 
-  protected def config: Config = Configuration()
+  protected def config: Config          = Configuration()
   protected lazy val protocUMLGenerator = ProtocUMLGenerator()
-  protected lazy val typeRepository = protocUMLGenerator.typeRepository
-  protected lazy val fileContent = protocUMLGenerator.fileContent
+  protected lazy val typeRepository     = protocUMLGenerator.typeRepository
+  protected lazy val fileContent        = protocUMLGenerator.fileContent
 
   tmpFile.deleteOnExit
 
@@ -66,7 +66,7 @@ abstract class ProtocGenUMLSpec(name: String, folder: String) extends FlatSpec w
 
 class SimpleProtocGenUMLSpec extends ProtocGenUMLSpec("simple", "p1") {
 
-  lazy val pakkage        = Package("test.package")
+  lazy val pakkage = Package("test.package")
 
   it should "have a simple message type" in {
 
@@ -107,7 +107,7 @@ class SimpleProtocGenUMLSpec extends ProtocGenUMLSpec("simple", "p1") {
 
 class OneOfProtocGenUMLSpec extends ProtocGenUMLSpec("oneOf", "p2") {
 
-  lazy val pakkage        = Package("test.package")
+  lazy val pakkage = Package("test.package")
 
   it should "have a simple message type with oneOf field" in {
 
@@ -124,15 +124,17 @@ class OneOfProtocGenUMLSpec extends ProtocGenUMLSpec("oneOf", "p2") {
         fields should not be (empty)
 
         fields should contain(MessageFields.TypedField("other", ScalarValueType("String"), Some(Optional)))
-        fields should contain(MessageFields.OneOfField("test_oneof", TypeIdentifier(Package("test.package"), Name(s"SampleMessage${TYPE_NAME_SEPARATOR}TestOneof"))))
-        fields should contain(MessageFields.OneOfField("test_oneof2", TypeIdentifier(Package("test.package"), Name(s"SampleMessage${TYPE_NAME_SEPARATOR}TestOneof2"))))
+        fields should contain(
+          MessageFields.OneOfField("test_oneof", TypeIdentifier(Package("test.package"), Name(s"SampleMessage${TYPE_NAME_SEPARATOR}TestOneof"))))
+        fields should contain(
+          MessageFields.OneOfField("test_oneof2", TypeIdentifier(Package("test.package"), Name(s"SampleMessage${TYPE_NAME_SEPARATOR}TestOneof2"))))
     }
   }
 }
 
 class NestedProtocGenUMLSpec extends ProtocGenUMLSpec("nested", "p3") {
 
-  lazy val pakkage        = Package("test.package")
+  lazy val pakkage = Package("test.package")
 
   val identifier             = TypeIdentifier(pakkage, Name("SampleMessage"))
   val nestedIdentifier       = TypeIdentifier(pakkage, Name(s"SampleMessage${TYPE_NAME_SEPARATOR}SubMessage"))
@@ -158,6 +160,35 @@ class NestedProtocGenUMLSpec extends ProtocGenUMLSpec("nested", "p3") {
   }
 }
 
+class PolymorphismProtocGenUMLSpec extends ProtocGenUMLSpec("polymorphism", "p4") {
+
+  lazy val pakkage = Package("test.package")
+
+  val personIdentifier   = TypeIdentifier(pakkage, Name("Person"))
+  val addressIdentifier  = TypeIdentifier(pakkage, Name("Person::Address"))
+  val musicianIdentifier = TypeIdentifier(pakkage, Name("Musician"))
+
+  it should "have a message types" in {
+
+    typeRepository should contain key (personIdentifier)
+    typeRepository should contain key (addressIdentifier)
+    typeRepository should contain key (musicianIdentifier)
+
+  }
+
+  it should "support simple extensions" in {
+
+    inside(typeRepository(musicianIdentifier)) {
+      case Types.MessageType(id, enclosingType, fields, origin) =>
+        fields should not be (empty)
+        fields should contain(MessageFields.TypedField("instrument", ScalarValueType("String"), Some(Required)))
+        fields should contain(MessageFields.TypedField("number_of_albums", ScalarValueType("Int"), Some(Optional)))
+        fields should contain(MessageFields.TypedField("person", CompoundType(personIdentifier), Some(Optional)))
+
+    }
+  }
+}
+
 class ComplexProtocGenUMLSpec extends ProtocGenUMLSpec("complex", "complex") {
 
   it should "have all expected types" in {
@@ -166,17 +197,19 @@ class ComplexProtocGenUMLSpec extends ProtocGenUMLSpec("complex", "complex") {
     val utilPackage     = Package("io.coding.me.schema.util")
     val databasePackage = Package("io.coding.me.schema.database")
 
-    typeRepository.keys.map(_.pakkage) should contain (musicPackage)
-    typeRepository.keys.map(_.pakkage) should contain (utilPackage)
+    typeRepository.keys.map(_.pakkage) should contain(musicPackage)
+    typeRepository.keys.map(_.pakkage) should contain(utilPackage)
 
     List("Date").map(Name).map(n => TypeIdentifier(utilPackage, n)).foreach { typeIdentifier =>
-
-      typeRepository.keys should contain (typeIdentifier)
+      typeRepository.keys should contain(typeIdentifier)
     }
 
-    List("Album", s"Album${TYPE_NAME_SEPARATOR}Genre", s"Album${TYPE_NAME_SEPARATOR}Interpret", "Musician", "Band").map(Name).map(n => TypeIdentifier(musicPackage, n)).foreach { typeIdentifier =>
+    List("Album", s"Album${TYPE_NAME_SEPARATOR}Genre", s"Album${TYPE_NAME_SEPARATOR}Interpret", "Musician", "Band")
+      .map(Name)
+      .map(n => TypeIdentifier(musicPackage, n))
+      .foreach { typeIdentifier =>
+        typeRepository.keys should contain(typeIdentifier)
+      }
 
-      typeRepository.keys should contain (typeIdentifier)
-    }
-
-}}
+  }
+}

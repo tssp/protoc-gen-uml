@@ -1,0 +1,28 @@
+syntax = "proto2";
+
+package test.package;
+
+message Person {
+
+  message Address {
+
+    required string street = 1;
+    required string city = 2;
+  }
+
+  required string name = 1;
+  required Address address = 2;
+}
+
+message Musician {
+
+  extensions 100 to 199;
+  
+  required string instrument = 1;
+}
+
+extend Musician {
+
+  optional int32 number_of_albums = 100;
+  optional Person person = 101;
+}

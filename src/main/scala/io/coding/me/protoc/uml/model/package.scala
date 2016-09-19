@@ -106,6 +106,7 @@ package object model {
       case _                                           => Nil
 
     }
+
     case class MessageType(identifier: TypeIdentifier, enclosingType: Option[TypeIdentifier], elements: Seq[MessageFields.MessageField], origin: Origin)
         extends Type {
 

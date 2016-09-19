@@ -46,6 +46,13 @@ object Transformer {
 
     val typedFields = typedFieldDescriptors.map(transformFieldDescriptor)
 
+    val extensionsFields =
+      (md.getFile.getExtensions.asScala.filter(fd => getMessageIdentifierHierarchy(fd.getContainingType) == identifier) ++ md.getExtensions.asScala)
+        .map(transformFieldDescriptor)
+        .distinct
+
+    val nonAncestorExtensionFields = extensionsFields
+
     val oneOfTypes = oneOfFieldDescriptors
       .map(_.getContainingOneof)
       .distinct
@@ -61,7 +68,7 @@ object Transformer {
 
     val oneOfFields = oneOfTypes.map(oneOfType => OneOfField(oneOfType.fieldName, oneOfType.identifier))
 
-    val fields = typedFields ++ oneOfFields
+    val fields = typedFields ++ oneOfFields ++ nonAncestorExtensionFields
 
     val messageType = Types.MessageType(identifier, enclosingType, fields, origin)
 
@@ -116,7 +123,7 @@ object Transformer {
     val fieldType = if (fd.isMapField) {
       val messageType = fd.getMessageType
 
-      val keyType = transformFieldDescriptor(messageType.getFields.asScala.find(_.getName == "key").get).fieldType
+      val keyType   = transformFieldDescriptor(messageType.getFields.asScala.find(_.getName == "key").get).fieldType
       val valueType = transformFieldDescriptor(messageType.getFields.asScala.find(_.getName == "value").get).fieldType
 
       FieldTypes.MapType(keyType, valueType)
