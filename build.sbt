@@ -13,7 +13,7 @@ resolvers += Resolver.jcenterRepo
 libraryDependencies ++= Seq(
   "com.trueaccord.scalapb" %% "compilerplugin" % "0.5.41",
   "com.github.os72"        %  "protoc-jar"     % "3.0.0",
-  "com.typesafe"           %  "config"         % "1.2.1",
+  "com.typesafe"           %  "config"         % "1.3.3",
   "com.github.melrief"     %% "pureconfig"     % "0.3.0" excludeAll(ExclusionRule(organization = "com.typesafe", name = "config")),
   "org.scalatest"          %% "scalatest"      % "3.0.0" % "test"
 )
