@@ -8,5 +8,5 @@ object Main extends App {
   val plugin   = ProtocUMLGenerator()
   val response = PluginFrontend.runWithInputStream(plugin, System.in)
 
-  System.out.write(response.toByteArray)
+  System.out.write(response)
 }

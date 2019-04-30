@@ -1,10 +1,9 @@
 package io.coding.me.protoc.uml
 
-import pureconfig._
-import pureconfig.syntax._
-import pureconfig.ConfigConvert.fromString
-
-import com.typesafe.config.ConfigFactory
+import pureconfig.{CamelCase, ConfigFieldMapping}
+import pureconfig.generic.ProductHint
+import pureconfig.generic.auto._
+import pureconfig.ConfigReader.fromString
 
 package object config {
 
@@ -55,13 +54,15 @@ package object config {
   case class Output(format: OutputFormat.Value, organization: OutputFileOrganization.Value, grouping: OutputGrouping.Value, file: String, filter: OutputFilter)
   case class Config(output: Output, uml: UML)
 
-  implicit val converterOutputFileOrganization = fromString[OutputFileOrganization.Value](OutputFileOrganization.withName(_))
-  implicit val converterOutputGrouping         = fromString[OutputGrouping.Value](OutputGrouping.withName(_))
-  implicit val converterOutputFormat           = fromString[OutputFormat.Value] { OutputFormat.withName(_) }
-  implicit val converterOneOfRepresentation    = fromString[OneOfRepresentation.Value](OneOfRepresentation.withName(_))
+  implicit val converterOutputFileOrganization = fromString[OutputFileOrganization.Value](s => Right(OutputFileOrganization.withName(s)))
+  implicit val converterOutputGrouping         = fromString[OutputGrouping.Value](s => Right(OutputGrouping.withName(s)))
+  implicit val converterOutputFormat           = fromString[OutputFormat.Value]( s => Right(OutputFormat.withName(s)))
+  implicit val converterOneOfRepresentation    = fromString[OneOfRepresentation.Value](s => Right(OneOfRepresentation.withName(s)))
+
+  implicit def hint[T] = ProductHint[T](ConfigFieldMapping(CamelCase, CamelCase))
 
   object Configuration {
 
-    def apply(): Config = ConfigFactory.load().getConfig("protoc-gen-uml").to[Config].get
+    def apply(): Config = pureconfig.loadConfig[Config]("protoc-gen-uml").right.get
   }
 }

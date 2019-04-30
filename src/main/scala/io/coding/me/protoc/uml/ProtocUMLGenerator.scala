@@ -15,9 +15,9 @@ class ProtocUMLGenerator(config: Config) extends ProtocCodeGenerator {
   var typeRepository: TypeRepository   = null
   var fileContent: Map[String, String] = null
 
-  override def run(req: CodeGeneratorRequest): CodeGeneratorResponse = {
+  override def run(request: Array[Byte]): Array[Byte] = {
 
-    typeRepository = Transformer(req).filterNot { case (typeIdentifier, _) => config.output.filter.packages(typeIdentifier.pakkage.p) }
+    typeRepository = Transformer(CodeGeneratorRequest.parseFrom(request)).filterNot { case (typeIdentifier, _) => config.output.filter.packages(typeIdentifier.pakkage.p) }
 
     val (umlFormatter, fileExtension) = config.output.format match {
 
@@ -49,7 +49,7 @@ class ProtocUMLGenerator(config: Config) extends ProtocCodeGenerator {
       case (file, content) => CodeGeneratorResponse.File.newBuilder().setName(file).setContent(content).build()
     }
 
-    CodeGeneratorResponse.newBuilder().addAllFile(responseFiles.asJava).build()
+    CodeGeneratorResponse.newBuilder().addAllFile(responseFiles.asJava).build().toByteArray
   }
 }
 
