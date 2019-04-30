@@ -22,8 +22,9 @@ package object formatter {
     def newline: StructuredStringFormatter           = copy(lines = lines :+ "")
     def append(value: String, space: Boolean = true) = copy(lines = lines.tail :+ (lines.last + (if (space) " " + value else value)))
 
-    def withIfElse(condition: Boolean)(ifFormatter: StructuredStringFormatter => StructuredStringFormatter,
-                                       elseFormatter: StructuredStringFormatter => StructuredStringFormatter) =
+    def withIfElse(
+        condition: Boolean
+    )(ifFormatter: StructuredStringFormatter => StructuredStringFormatter, elseFormatter: StructuredStringFormatter => StructuredStringFormatter) =
       if (condition) ifFormatter(this)
       else elseFormatter(this)
 

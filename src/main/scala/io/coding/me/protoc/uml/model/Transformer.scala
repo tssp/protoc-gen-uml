@@ -1,13 +1,12 @@
 package io.coding.me.protoc.uml.model
 
-import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
 import com.google.protobuf.DescriptorProtos._
-import com.google.protobuf.Descriptors._
-import com.google.protobuf.Descriptors.FieldDescriptor
 import com.google.protobuf.Descriptors.FieldDescriptor.Type
-import scala.collection.JavaConverters._
-
+import com.google.protobuf.Descriptors.{FieldDescriptor, _}
+import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
 import io.coding.me.protoc.uml.util.NameFormatter._
+
+import scala.collection.JavaConverters._
 
 /** Takes a PB model in form of a CodeGeneratorRequest and transforms it into a simplified model.   */
 object Transformer {
@@ -27,9 +26,8 @@ object Transformer {
       .map(typ => typ.identifier -> typ)
       .toMap
 
-  import io.coding.me.protoc.uml.model.FieldTypes._
-  import io.coding.me.protoc.uml.model.Multiplicities._
   import io.coding.me.protoc.uml.model.MessageFields._
+  import io.coding.me.protoc.uml.model.Multiplicities._
   import io.coding.me.protoc.uml.model.Types._
 
   /** Transform on file level. */
@@ -148,18 +146,20 @@ object Transformer {
   /** Generate a unique (?) type identifier based on package name, type name and enclosing type. */
   private[model] def getTypeIdentifier(typeName: String, fullName: String, enclosingType: Option[TypeIdentifier]): TypeIdentifier = {
 
-    val (name, pakkage) = enclosingType.map { enclosing =>
-      val n = Name(s"${enclosing.name}${TYPE_NAME_SEPARATOR}${typeName}")
-      val p = enclosing.pakkage
+    val (name, pakkage) = enclosingType
+      .map { enclosing =>
+        val n = Name(s"${enclosing.name}${TYPE_NAME_SEPARATOR}${typeName}")
+        val p = enclosing.pakkage
 
-      (n, p)
-    }.getOrElse {
+        (n, p)
+      }
+      .getOrElse {
 
-      val n = Name(typeName)
-      val p = Package(fullName.replaceAll(s".${typeName}", "")) // Last element points to :wtype name
+        val n = Name(typeName)
+        val p = Package(fullName.replaceAll(s".${typeName}", "")) // Last element points to :wtype name
 
-      (n, p)
-    }
+        (n, p)
+      }
     TypeIdentifier(pakkage, name)
   }
 

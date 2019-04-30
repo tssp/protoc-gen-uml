@@ -1,7 +1,5 @@
 package io.coding.me.protoc.uml.util
 
-import java.lang.Character
-
 /** Simple functionality to convert a name string into different case formats. */
 object NameFormatter {
 

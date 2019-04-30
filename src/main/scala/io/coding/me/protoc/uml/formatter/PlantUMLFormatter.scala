@@ -1,10 +1,9 @@
 package io.coding.me.protoc.uml.formatter
 
-import io.coding.me.protoc.uml.model._
 import io.coding.me.protoc.uml.model.FieldTypes._
 import io.coding.me.protoc.uml.model.MessageFields._
 import io.coding.me.protoc.uml.model.Multiplicities._
-
+import io.coding.me.protoc.uml.model._
 import io.coding.me.protoc.uml.{config => c}
 
 /** Generates a textual description of the Protos in PlantUML format. */
@@ -48,14 +47,16 @@ object PlantUMLFormatter extends UMLFormatter {
     }
 
     def formatType(typ: Types.Type, pakkage: Package) =
-      StructuredStringFormatter.add {
-        typ match {
+      StructuredStringFormatter
+        .add {
+          typ match {
 
-          case e: Types.EnumType    => s"enum ${e.identifier.name}"
-          case o: Types.OneOfType   => s"class ${o.identifier.name} << oneOf >>"
-          case m: Types.MessageType => s"class ${m.identifier.name}"
+            case e: Types.EnumType    => s"enum ${e.identifier.name}"
+            case o: Types.OneOfType   => s"class ${o.identifier.name} << oneOf >>"
+            case m: Types.MessageType => s"class ${m.identifier.name}"
+          }
         }
-      }.withCondition(config.uml.view.fields) {
+        .withCondition(config.uml.view.fields) {
           _.withCurlyBrackets { f =>
             typ match {
 
@@ -99,14 +100,17 @@ object PlantUMLFormatter extends UMLFormatter {
           }
         }
       }
-      .withIfElse(config.uml.view.pakkage)(ifFormatter = {
+      .withIfElse(config.uml.view.pakkage)(
+        ifFormatter = {
 
-        _.add(types.groupBy(_.identifier.pakkage).map {
-          case (pakkage, typesPerPackage) =>
-            StructuredStringFormatter.add(s"package $pakkage").withCurlyBrackets(_.add(formatTypes(typesPerPackage)))
-        })
+          _.add(types.groupBy(_.identifier.pakkage).map {
+            case (pakkage, typesPerPackage) =>
+              StructuredStringFormatter.add(s"package $pakkage").withCurlyBrackets(_.add(formatTypes(typesPerPackage)))
+          })
 
-      }, elseFormatter = _.add(formatTypes(types)))
+        },
+        elseFormatter = _.add(formatTypes(types))
+      )
       .add("@enduml")
       .toString
 

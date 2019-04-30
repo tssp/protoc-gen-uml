@@ -1,9 +1,9 @@
 package io.coding.me.protoc.uml
 
-import pureconfig.{CamelCase, ConfigFieldMapping}
-import pureconfig.generic.ProductHint
 import pureconfig.generic.auto._
 import pureconfig.ConfigReader.fromString
+import pureconfig.generic.ProductHint
+import pureconfig.{CamelCase, ConfigFieldMapping}
 
 package object config {
 
@@ -56,7 +56,7 @@ package object config {
 
   implicit val converterOutputFileOrganization = fromString[OutputFileOrganization.Value](s => Right(OutputFileOrganization.withName(s)))
   implicit val converterOutputGrouping         = fromString[OutputGrouping.Value](s => Right(OutputGrouping.withName(s)))
-  implicit val converterOutputFormat           = fromString[OutputFormat.Value]( s => Right(OutputFormat.withName(s)))
+  implicit val converterOutputFormat           = fromString[OutputFormat.Value](s => Right(OutputFormat.withName(s)))
   implicit val converterOneOfRepresentation    = fromString[OneOfRepresentation.Value](s => Right(OneOfRepresentation.withName(s)))
 
   implicit def hint[T] = ProductHint[T](ConfigFieldMapping(CamelCase, CamelCase))

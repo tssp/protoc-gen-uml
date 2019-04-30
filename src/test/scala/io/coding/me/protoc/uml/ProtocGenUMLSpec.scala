@@ -1,23 +1,15 @@
 package io.coding.me.protoc.uml.model
 
+import java.io.File
+import java.nio.file.Files
+
+import com.github.os72.protocjar.Protoc
 import io.coding.me.protoc.uml._
 import io.coding.me.protoc.uml.config._
 import io.coding.me.protoc.uml.model.FieldTypes._
 import io.coding.me.protoc.uml.model.Multiplicities._
-import io.coding.me.protoc.uml.model.MessageFields._
-import io.coding.me.protoc.uml.model.Types._
-import io.coding.me.protoc.uml.model._
-import org.scalatest.Inside
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
-
-import com.github.os72.protocjar.Protoc
-
+import org.scalatest.{FlatSpec, Inside, Matchers}
 import protocbridge._
-import java.io.File
-import java.nio.file.Files
-
-import scala.collection.JavaConversions._
 
 abstract class ProtocGenUMLSpec(name: String, folder: String) extends FlatSpec with Matchers with Inside {
 

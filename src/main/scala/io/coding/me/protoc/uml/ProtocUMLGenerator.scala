@@ -1,11 +1,9 @@
 package io.coding.me.protoc.uml
 
-import io.coding.me.protoc.uml.model._
+import com.google.protobuf.compiler.PluginProtos.{CodeGeneratorRequest, CodeGeneratorResponse}
 import io.coding.me.protoc.uml.config._
 import io.coding.me.protoc.uml.formatter._
-
-import com.google.protobuf.compiler.PluginProtos.{CodeGeneratorResponse, CodeGeneratorRequest}
-
+import io.coding.me.protoc.uml.model._
 import protocbridge.ProtocCodeGenerator
 
 import scala.collection.JavaConverters._
@@ -17,7 +15,9 @@ class ProtocUMLGenerator(config: Config) extends ProtocCodeGenerator {
 
   override def run(request: Array[Byte]): Array[Byte] = {
 
-    typeRepository = Transformer(CodeGeneratorRequest.parseFrom(request)).filterNot { case (typeIdentifier, _) => config.output.filter.packages(typeIdentifier.pakkage.p) }
+    typeRepository = Transformer(CodeGeneratorRequest.parseFrom(request)).filterNot {
+      case (typeIdentifier, _) => config.output.filter.packages(typeIdentifier.pakkage.p)
+    }
 
     val (umlFormatter, fileExtension) = config.output.format match {
 
@@ -40,8 +40,8 @@ class ProtocUMLGenerator(config: Config) extends ProtocCodeGenerator {
         }
 
       case OutputFileOrganization.FILE_PER_PACKAGE =>
-        typeRepository.values.groupBy(_.identifier.pakkage).map { case (pakkage, types) => pakkage                                 -> umlFormatter(types, typeRepository, config) }.map {
-          case (pakkage, content)                                                       => createFileName(s"${pakkage.p}.package") -> content
+        typeRepository.values.groupBy(_.identifier.pakkage).map { case (pakkage, types) => pakkage -> umlFormatter(types, typeRepository, config) }.map {
+          case (pakkage, content) => createFileName(s"${pakkage.p}.package") -> content
         }
     }
 

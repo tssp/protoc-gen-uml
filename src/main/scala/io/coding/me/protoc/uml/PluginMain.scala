@@ -1,7 +1,7 @@
 package io.coding.me.protoc.uml
 
-import protocbridge.ProtocBridge
 import com.github.os72.protocjar.Protoc
+import protocbridge.ProtocBridge
 
 /**
   * Main entry point when using compiler as sbt plugin.

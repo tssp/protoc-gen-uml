@@ -122,12 +122,13 @@ package object model {
       override val referencedTypeIdentifiers = Set.empty[TypeIdentifier]
     }
 
-    case class OneOfType(identifier: TypeIdentifier,
-                         enclosingType: Option[TypeIdentifier],
-                         fieldName: String,
-                         elements: Seq[MessageFields.MessageField],
-                         origin: Origin)
-        extends Type {
+    case class OneOfType(
+        identifier: TypeIdentifier,
+        enclosingType: Option[TypeIdentifier],
+        fieldName: String,
+        elements: Seq[MessageFields.MessageField],
+        origin: Origin
+    ) extends Type {
       require(enclosingType.isDefined)
 
       type ElementType = MessageFields.MessageField
