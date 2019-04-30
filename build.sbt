@@ -2,7 +2,7 @@ enablePlugins(JavaAppPackaging)
 
 scalaVersion := "2.11.12"
 
-crossScalaVersions := Seq("2.11.12")
+crossScalaVersions := Seq("2.12.8", "2.11.12")
 
 name := "protoc-gen-uml"
 
