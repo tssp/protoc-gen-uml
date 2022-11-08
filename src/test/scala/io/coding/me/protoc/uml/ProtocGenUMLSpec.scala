@@ -2,16 +2,17 @@ package io.coding.me.protoc.uml.model
 
 import java.io.File
 import java.nio.file.Files
-
 import com.github.os72.protocjar.Protoc
 import io.coding.me.protoc.uml._
 import io.coding.me.protoc.uml.config._
 import io.coding.me.protoc.uml.model.FieldTypes._
 import io.coding.me.protoc.uml.model.Multiplicities._
-import org.scalatest.{FlatSpec, Inside, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.Inside
 import protocbridge._
 
-abstract class ProtocGenUMLSpec(name: String, folder: String) extends FlatSpec with Matchers with Inside {
+abstract class ProtocGenUMLSpec(name: String, folder: String) extends AnyFlatSpec with Matchers with Inside {
 
   private val tmpFile                  = Files.createTempDirectory("compiled-protos-").toFile
   private var testDir: String          = null
@@ -117,9 +118,11 @@ class OneOfProtocGenUMLSpec extends ProtocGenUMLSpec("oneOf", "p2") {
 
         fields should contain(MessageFields.TypedField("other", ScalarValueType("String"), Some(Optional)))
         fields should contain(
-          MessageFields.OneOfField("test_oneof", TypeIdentifier(Package("test.package"), Name(s"SampleMessage${TYPE_NAME_SEPARATOR}TestOneof"))))
+          MessageFields.OneOfField("test_oneof", TypeIdentifier(Package("test.package"), Name(s"SampleMessage${TYPE_NAME_SEPARATOR}TestOneof")))
+        )
         fields should contain(
-          MessageFields.OneOfField("test_oneof2", TypeIdentifier(Package("test.package"), Name(s"SampleMessage${TYPE_NAME_SEPARATOR}TestOneof2"))))
+          MessageFields.OneOfField("test_oneof2", TypeIdentifier(Package("test.package"), Name(s"SampleMessage${TYPE_NAME_SEPARATOR}TestOneof2")))
+        )
     }
   }
 }
