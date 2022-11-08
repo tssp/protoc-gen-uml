@@ -60,7 +60,7 @@ object Transformer {
         val oneOfIdentifier = identifier.copy(name = Name(s"${identifier.name.n}${TYPE_NAME_SEPARATOR}${oneOfName}"))
         val oneOfFields     = oneOfDescriptor.getFields.asScala.map(transformFieldDescriptor)
 
-        OneOfType(oneOfIdentifier, Some(identifier), oneOfFieldName, oneOfFields, origin)
+        OneOfType(oneOfIdentifier, Some(identifier), oneOfFieldName, oneOfFields.toSeq, origin)
       }
       .toSet
 
@@ -68,7 +68,7 @@ object Transformer {
 
     val fields = typedFields ++ oneOfFields ++ nonAncestorExtensionFields
 
-    val messageType = Types.MessageType(identifier, enclosingType, fields, origin)
+    val messageType = Types.MessageType(identifier, enclosingType, fields.toSeq, origin)
 
     val nestedEnumTypes    = md.getEnumTypes.asScala.map(nested => transformEnumDescriptor(nested, Some(identifier), origin)).toSet
     val nestedMessageTypes = md.getNestedTypes.asScala.flatMap(nested => transformMessageDescriptor(nested, Some(identifier), origin)).toSet
@@ -138,7 +138,7 @@ object Transformer {
 
     val identifier = getEnumIdentifier(ed, enclosingType)
     val enumFields = ed.getValues.asScala.map(evd => evd.getName).map(EnumFields.EnumField)
-    val enumType   = Types.EnumType(identifier, enclosingType, enumFields, origin)
+    val enumType   = Types.EnumType(identifier, enclosingType, enumFields.toSeq, origin)
 
     enumType
   }
